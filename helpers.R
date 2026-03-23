@@ -1,50 +1,170 @@
-minerals_map <- function(buffer_lands, near_tribal_lands, on_tribal_lands) {
-  coords_on <- st_coordinates(on_tribal_lands)
-  coords_near <- st_coordinates(near_tribal_lands)
+map_by_tribe <- function(data, tribe) {
+  if (tribe == 'All Tribes') {
+    return(data)
+  }
   
+  data %>%
+    filter(NAME == tribe)
+}
+
+mrds_map <- function(buffer_lands,
+                     on_tribal_lands,
+                     within_35_mi,
+                     more_than_35_mi,
+                     res_shapes) {
   leaflet() %>%
     addTiles() %>%
     addPolygons(
+      data = res_shapes,
+      color = 'black',
+      weight = 1,
+      fillColor = 'yellowgreen',
+      fillOpacity = 1,
+      popup = res_shapes$TRIBE_NAME,
+      group = 'Tribes'
+    ) %>%
+    addPolygons(
       data = buffer_lands,
-      color = "darkolivegreen",
-      fillColor = "yellowgreen",
+      color = 'darkolivegreen',
+      fillColor = 'yellowgreen',
       fillOpacity = 0.5,
       weight = 1,
-      popup = buffer_lands$NAME
+      popup = buffer_lands$NAME,
+      group = 'Tribes'
     ) %>%
     addCircleMarkers(
-      lng = coords_near[, 1],
-      lat = coords_near[, 2],
-      popup = near_tribal_lands$SITE_NAME,
-      radius = 2.5,
-      fillColor = "firebrick",
+      lng = within_35_mi$lng,
+      lat = within_35_mi$lat,
+      popup = within_35_mi$SITE_NAME,
+      radius = 2,
+      fillColor = 'firebrick',
       fillOpacity = 1,
       stroke = TRUE,
-      color = "black",
-      weight = 0.5
+      color = 'black',
+      weight = 0.5,
+      group = 'Deposit within 35 miles of tribal land'
     ) %>%
     addCircleMarkers(
-      lng = coords_on[, 1],
-      lat = coords_on[, 2],
+      lng = more_than_35_mi$lng,
+      lat = more_than_35_mi$lat,
+      popup = more_than_35_mi$SITE_NAME,
+      radius = 2,
+      fillColor = 'royalblue',
+      fillOpacity = 1,
+      stroke = TRUE,
+      color = 'black',
+      weight = 0.5,
+      group = 'Deposit more than 35 miles from tribal land'
+    ) %>%
+    addCircleMarkers(
+      lng = on_tribal_lands$lng,
+      lat = on_tribal_lands$lat,
       popup = on_tribal_lands$SITE_NAME,
-      radius = 2.5,
-      fillColor = "yellowgreen",
+      radius = 2,
+      fillColor = 'yellowgreen',
       fillOpacity = 1,
       stroke = TRUE,
-      color = "black",
-      weight = 0.5
+      color = 'black',
+      weight = 0.5,
+      group = 'Directly on tribal lands'
     ) %>%
     addLegend(
-      title = "Legend",
-      position = "bottomright",
-      colors = c("yellowgreen", "firebrick"),
-      labels = c("Directly on tribal lands", "Within 35-mile buffer")
+      title = 'Legend',
+      position = 'bottomright',
+      colors = c('yellowgreen', 'firebrick', 'royalblue'),
+      labels = c(
+        'Directly on tribal lands',
+        'Deposit within 35 miles of tribal land',
+        'Deposit more than 35 miles from tribal land'
+      )
+    ) %>%
+    addLayersControl(
+      overlayGroups = c(
+        'Tribes',
+        'Directly on tribal lands',
+        'Deposit within 35 miles of tribal land',
+        'Deposit more than 35 miles from tribal land'),
+      options = layersControlOptions(collapsed = FALSE)
     )
 }
 
-tribe_table <- function(data, tribe) {
-  if (tribe == "All tribes") return(NULL)
-  data %>%
-    filter(str_detect(Tribes_List, paste0("\\b", fixed(tribe), "\\b"))) %>%
-    select(-any_of(c("NAME", "BASENAME")))
+usmin_map <- function(buffer_lands,
+                      on_tribal_lands,
+                      within_35_mi,
+                      more_than_35_mi,
+                      res_shapes) {
+  leaflet() %>%
+    addTiles() %>%
+    addPolygons(
+      data = res_shapes,
+      color = 'black',
+      weight = 1,
+      fillColor = 'yellowgreen',
+      fillOpacity = 1,
+      popup = res_shapes$TRIBE_NAME,
+      group = 'Tribes'
+    ) %>%
+    addPolygons(
+      data = buffer_lands,
+      color = 'darkolivegreen',
+      fillColor = 'yellowgreen',
+      fillOpacity = 0.5,
+      weight = 1,
+      popup = buffer_lands$NAME,
+      group = 'Tribes'
+    ) %>%
+    addCircleMarkers(
+      lng = more_than_35_mi$lng,
+      lat = more_than_35_mi$lat,
+      popup = more_than_35_mi$PopupInfo,
+      radius = 2,
+      fillColor = 'royalblue',
+      fillOpacity = 1,
+      stroke = TRUE,
+      color = 'black',
+      weight = 0.5,
+      group = 'Deposit more than 35 miles from tribal land'
+    ) %>%
+    addCircleMarkers(
+      lng = within_35_mi$lng,
+      lat = within_35_mi$lat,
+      popup = within_35_mi$PopupInfo,
+      radius = 2,
+      fillColor = 'firebrick',
+      fillOpacity = 1,
+      stroke = TRUE,
+      color = 'black',
+      weight = 0.5,
+      group = 'Deposit within 35 miles of tribal land'
+    ) %>%
+    addCircleMarkers(
+      lng = on_tribal_lands$lng,
+      lat = on_tribal_lands$lat,
+      popup = on_tribal_lands$PopupInfo,
+      radius = 2,
+      fillColor = 'yellowgreen',
+      fillOpacity = 1,
+      stroke = TRUE,
+      color = 'black',
+      weight = 0.5,
+      group = 'Directly on tribal lands'
+    ) %>%
+    addLegend(
+      title = 'Legend',
+      position = 'bottomright',
+      colors = c('yellowgreen', 'firebrick', 'royalblue'),
+      labels = c(
+        'Directly on tribal lands',
+        'Deposit within 35 miles of tribal land',
+        'Deposit more than 35 miles from tribal land'
+      )
+    ) %>%
+    addLayersControl(
+      overlayGroups = c(
+        'Tribes',
+        'Directly on tribal lands',
+        'Deposit within 35 miles of tribal land',
+        'Deposit more than 35 miles from tribal land'),
+      options = layersControlOptions(collapsed = FALSE)
+    )
 }
