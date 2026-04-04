@@ -10,18 +10,18 @@ source('helpers.R')
 mrds_on_tribal_lands <- readRDS('data/MRDS/on_tribal_lands.rds')
 mrds_within_35_mi <- readRDS('data/MRDS/within_35_mi.rds')
 mrds_more_than_35_mi <- readRDS('data/MRDS/more_than_35_mi.rds')
-mrds_master <- read_csv('data/MRDS-Analysis/MRDS_Master_Deposits.csv',
+mrds_master <- read_csv('data/MRDS_Analysis/MRDS_Master_Deposits.csv',
                         show_col_types = FALSE) %>%
   mutate(DEP_ID = as.character(DEP_ID))
-stakeholder_map <- read_csv('data/MRDS-Analysis/MRDS_Stakeholder_Mapping.csv',
+stakeholder_map <- read_csv('data/MRDS_Analysis/MRDS_Stakeholder_Mapping.csv',
                             show_col_types = FALSE)
 
 usmin_on_tribal_lands <- readRDS('data/USMIN/on_tribal_lands.rds')
 usmin_within_35_mi <- readRDS('data/USMIN/within_35_mi.rds')
 usmin_more_than_35_mi <- readRDS('data/USMIN/more_than_35_mi.rds')
 
-res_shapes  <- readRDS('data/reservation-shapes/reservations.rds')
-buffer_lands <- readRDS('data/reservation-shapes/buffer_lands.rds')
+res_shapes  <- readRDS('data/reservation_shapes/reservations.rds')
+buffer_lands <- readRDS('data/reservation_shapes/buffer_lands.rds')
 tribe_list <- c('All Tribes', sort(stakeholder_map$Tribe_Name))
 
 # UI layout ----
