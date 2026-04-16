@@ -3,6 +3,10 @@ library(leaflet)
 library(sf)
 library(readr)
 library(dplyr)
+library(lobstr)
+library(glue)
+library(stringr)
+library(tidyr)
 
 source('helpers.R')
 
@@ -15,14 +19,28 @@ mrds_master <- read_csv('data/MRDS_Analysis/MRDS_Master_Deposits.csv',
   mutate(DEP_ID = as.character(DEP_ID))
 stakeholder_map <- read_csv('data/MRDS_Analysis/MRDS_Stakeholder_Mapping.csv',
                             show_col_types = FALSE)
+mrds_res_shapes <- readRDS('data/reservation_shapes/mrds_reservations.rds')
 
 usmin_on_tribal_lands <- readRDS('data/USMIN/on_tribal_lands.rds')
 usmin_within_35_mi <- readRDS('data/USMIN/within_35_mi.rds')
 usmin_more_than_35_mi <- readRDS('data/USMIN/more_than_35_mi.rds')
+usmin_master <- read_csv('data/USMIN_Analysis/USMIN_Master_Deposits.csv',
+                         show_col_types = FALSE)
+usmin_res_shapes <- readRDS('data/reservation_shapes/usmin_reservations.rds')
 
-res_shapes  <- readRDS('data/reservation_shapes/reservations.rds')
 buffer_lands <- readRDS('data/reservation_shapes/buffer_lands.rds')
 tribe_list <- c('All Tribes', sort(stakeholder_map$Tribe_Name))
+
+# print(obj_sizes(
+#   mrds_on_tribal_lands,
+#   mrds_within_35_mi,
+#   mrds_more_than_35_mi,
+#   usmin_on_tribal_lands,
+#   usmin_within_35_mi,
+#   usmin_more_than_35_mi,
+#   res_shapes,
+#   buffer_lands
+# ))
 
 # UI layout ----
 ui <- fluidPage(sidebarLayout(
@@ -72,15 +90,27 @@ server <- function(input, output) {
     }
   })
   
-  selected_res_shapes <- reactive({
+  selected_mrds_res_shapes <- reactive({
     req(input$tribe)
     if (input$tribe == 'All Tribes') {
-      res_shapes
+      mrds_res_shapes
     } else {
-      res_shapes %>%
-        filter(TRIBE_NAME == input$tribe)
+      mrds_res_shapes %>%
+        filter(NAME == input$tribe)
     }
   })
+  
+  selected_usmin_res_shapes <- reactive({
+    req(input$tribe)
+    if (input$tribe == 'All Tribes') {
+      usmin_res_shapes
+    } else {
+      usmin_res_shapes %>%
+        filter(NAME == input$tribe)
+    }
+  })
+  
+  mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
   
   output$mrds_map <- renderLeaflet({
     mrds_map(
@@ -88,7 +118,7 @@ server <- function(input, output) {
       filtered_mrds_on_tribal_lands(),
       filtered_mrds_within_35_mi(),
       filtered_mrds_more_than_35_mi(),
-      selected_res_shapes()
+      selected_mrds_res_shapes()
     )
   })
   
@@ -98,7 +128,7 @@ server <- function(input, output) {
       filtered_usmin_on_tribal_lands(),
       filtered_usmin_within_35_mi(),
       filtered_usmin_more_than_35_mi(),
-      selected_res_shapes()
+      selected_usmin_res_shapes()
       )
   })
 }
