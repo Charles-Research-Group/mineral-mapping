@@ -110,7 +110,7 @@ server <- function(input, output) {
     }
   })
   
-  mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
+  # mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
   
   output$mrds_map <- renderLeaflet({
     mrds_map(

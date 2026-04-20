@@ -58,7 +58,7 @@ mrds_map <- function(buffer_lands,
       fillColor = 'yellowgreen',
       fillOpacity = 0.5,
       weight = 1,
-      popup = buffer_lands$NAME,
+      # popup = buffer_lands$NAME,
       group = 'Tribes'
     ) %>%
     addCircleMarkers(
@@ -139,7 +139,7 @@ usmin_map <- function(buffer_lands,
       fillColor = 'yellowgreen',
       fillOpacity = 0.5,
       weight = 1,
-      popup = buffer_lands$NAME,
+      # popup = buffer_lands$NAME,
       group = 'Tribes'
     ) %>%
     addCircleMarkers(
