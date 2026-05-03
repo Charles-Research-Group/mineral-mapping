@@ -7,35 +7,6 @@ map_by_tribe <- function(data, tribe) {
     filter(NAME == tribe)
 }
 
-# build_mrds_res_layer <- function(res_shapes, master) {
-#   master_long <- master %>%
-#     filter(!is.na(Tribes_List) & Tribes_List != "") %>%
-#     separate_rows(Tribes_List, sep = ";") %>%
-#     mutate(Tribes_List = str_trim(Tribes_List))
-#   
-#   tribe_summary <- master_long %>%
-#     group_by(Tribes_List) %>%
-#     summarise(
-#       Total_Deposits = n_distinct(SITE_NAME),
-#       On_Tribal_Land = sum(On_Tribal_Land, na.rm = TRUE),
-#       Within_35mi = sum(Within_35mi_Buffer, na.rm = TRUE),
-#       .groups = "drop"
-#     ) %>%
-#     mutate(
-#       popup = glue(
-#         "<div style='font-size:13px'>",
-#         "<b>Tribe:</b> {Tribes_List}",
-#         "<hr>",
-#         "<b>Total Deposits:</b> {Total_Deposits}<br>",
-#         "<b>On Tribal Land:</b> {On_Tribal_Land}<br>",
-#         "<b>Within 35 mi:</b> {Within_35mi}<br>"
-#       )
-#     )
-#   
-#   res_shapes %>%
-#     left_join(tribe_summary, by = c("NAME" = "Tribes_List"))
-# }
-
 mrds_map <- function(buffer_lands,
                      on_tribal_lands,
                      within_35_mi,
