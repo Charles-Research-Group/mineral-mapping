@@ -7,6 +7,8 @@ library(lobstr)
 library(glue)
 library(stringr)
 library(tidyr)
+library(lwgeom)
+library(DT)
 
 source('helpers.R')
 
@@ -17,8 +19,10 @@ mrds_more_than_35_mi <- readRDS('data/MRDS/more_than_35_mi.rds')
 mrds_master <- read_csv('data/MRDS_Analysis/MRDS_Master_Deposits.csv',
                         show_col_types = FALSE) %>%
   mutate(DEP_ID = as.character(DEP_ID))
-stakeholder_map <- read_csv('data/MRDS_Analysis/MRDS_Stakeholder_Mapping.csv',
-                            show_col_types = FALSE)
+mrds_mineral_summary <- read_csv('data/MRDS_Analysis/MRDS_Mineral_Summary.csv',
+                                 show_col_types = FALSE)
+mrds_stakeholder_map <- read_csv('data/MRDS_Analysis/MRDS_Stakeholder_Mapping.csv',
+                                 show_col_types = FALSE)
 mrds_res_shapes <- readRDS('data/reservation_shapes/mrds_reservations.rds')
 
 usmin_on_tribal_lands <- readRDS('data/USMIN/on_tribal_lands.rds')
@@ -26,29 +30,61 @@ usmin_within_35_mi <- readRDS('data/USMIN/within_35_mi.rds')
 usmin_more_than_35_mi <- readRDS('data/USMIN/more_than_35_mi.rds')
 usmin_master <- read_csv('data/USMIN_Analysis/USMIN_Master_Deposits.csv',
                          show_col_types = FALSE)
+usmin_mineral_summary <- read_csv('data/USMIN_Analysis/USMIN_Mineral_Summary.csv',
+                                  show_col_types = FALSE)
+usmin_stakeholder_map <- read_csv('data/USMIN_Analysis/USMIN_Stakeholder_Mapping.csv',
+                                  show_col_types = FALSE)
 usmin_res_shapes <- readRDS('data/reservation_shapes/usmin_reservations.rds')
 
 buffer_lands <- readRDS('data/reservation_shapes/buffer_lands.rds')
-tribe_list <- c('All Tribes', sort(stakeholder_map$Tribe_Name))
+tribe_list <- c('All Tribes', sort(mrds_stakeholder_map$Tribe_Name))
 
-# print(obj_sizes(
-#   mrds_on_tribal_lands,
-#   mrds_within_35_mi,
-#   mrds_more_than_35_mi,
-#   usmin_on_tribal_lands,
-#   usmin_within_35_mi,
-#   usmin_more_than_35_mi,
-#   res_shapes,
-#   buffer_lands
-# ))
+print(
+  obj_sizes(
+    mrds_on_tribal_lands,
+    mrds_within_35_mi,
+    mrds_more_than_35_mi,
+    usmin_on_tribal_lands,
+    usmin_within_35_mi,
+    usmin_more_than_35_mi,
+    res_shapes,
+    buffer_lands
+  )
+)
 
 # UI layout ----
 ui <- fluidPage(sidebarLayout(
   sidebarPanel(width = 3, selectInput('tribe', 'Tribe', choices = tribe_list)),
   tabsetPanel(
     id = 'page',
-    tabPanel('MRDS', width = 9, leafletOutput('mrds_map', height = '80vh')),
-    tabPanel('USMIN', width = 9, leafletOutput('usmin_map', height = '80vh'))
+    tabPanel(
+      'MRDS',
+      width = 9,
+      div(
+        style = "padding: 20px;",
+      leafletOutput('mrds_map', height = '80vh'),
+        br(),
+        h4("Mineral Proximity Summary"),
+        div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_mineral_tbl")),
+        br(),
+        h4("Tribal Stakeholder Mapping"),
+        div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_stakeholder_tbl"))
+      )
+    ),
+    tabPanel(
+      'USMIN',
+      width = 9,
+      div(
+        style = "padding: 20px;",
+        leafletOutput('usmin_map', height = '80vh'),
+        br(),
+        h4("Mineral Proximity Summary"),
+        div(style = "height:350px; overflow-y:auto;", DTOutput("usmin_mineral_tbl")),
+        br(),
+        h4("Tribal Stakeholder Mapping"),
+        div(style = "height:350px; overflow-y:auto;", DTOutput("usmin_stakeholder_tbl"))
+      )
+    )
   )
 ))
 
@@ -122,6 +158,22 @@ server <- function(input, output) {
     )
   })
   
+  output$mrds_mineral_tbl <- renderDT({
+    build_mrds_mineral_table(mrds_mineral_summary)
+  }, server = FALSE)
+  
+  output$mrds_stakeholder_tbl <- renderDT({
+    build_mrds_stakeholder_table(mrds_stakeholder_map)
+  }, server = FALSE)
+  
+  output$usmin_mineral_tbl <- renderDT({
+    build_usmin_mineral_table(usmin_mineral_summary)
+  }, server = FALSE)
+  
+  output$usmin_stakeholder_tbl <- renderDT({
+    build_usmin_stakeholder_table(usmin_stakeholder_map)
+  }, server = FALSE)
+  
   output$usmin_map <- renderLeaflet({
     usmin_map(
       filtered_buffer_lands(),
@@ -129,7 +181,7 @@ server <- function(input, output) {
       filtered_usmin_within_35_mi(),
       filtered_usmin_more_than_35_mi(),
       selected_usmin_res_shapes()
-      )
+    )
   })
 }
 

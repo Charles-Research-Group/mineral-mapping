@@ -1,24 +1,29 @@
 library(sf)
 library(dplyr)
+library(readr)
+library(tidyr)
+library(stringr)
 
 prep_polygons <- function(x, simplify = FALSE, tol = 1500) {
   x <- x |>
     st_make_valid() |>
     st_transform(5070)
-  
+
   if (simplify) {
     x <- st_simplify(x, dTolerance = tol, preserveTopology = TRUE)
   }
-  
+
   x |> st_transform(4326)
 }
 
-buffer_lands <- readRDS("data/reservation_shapes/buffer_lands.rds")
+buffer_lands_raw <- st_read("data/reservation_shapes/buffer_lands.geojson",
+                            quiet = TRUE)
 
-buffer_lands_fixed <- buffer_lands %>%
+buffer_lands_fixed <- buffer_lands_raw %>%
   st_make_valid() %>%
   st_transform(5070) %>%
-  st_simplify(dTolerance = 500, preserveTopology = TRUE) %>%
+  st_simplify(dTolerance = 200, preserveTopology = TRUE) %>%
+  st_buffer(0) %>%
   st_make_valid() %>%
   st_transform(4326)
 
@@ -26,15 +31,18 @@ saveRDS(buffer_lands_fixed,
         "data/reservation_shapes/buffer_lands.rds",
         compress = FALSE)
 
-reservations <- st_read("data/reservation_shapes/TribalLands_fo_ExportFeature.shp",
-                        quiet = TRUE)
+reservations_raw <- st_read("data/reservation_shapes/TribalLands_fo_ExportFeature.shp",
+                            quiet = TRUE)
 
-reservations_fixed <- reservations %>%
+reservations_fixed <- reservations_raw %>%
   st_make_valid() %>%
   st_transform(5070) %>%
-  st_simplify(dTolerance = 500, preserveTopology = TRUE) %>%
+  # st_buffer(56327) %>%
+  st_simplify(dTolerance = 200, preserveTopology = TRUE) %>%
+  st_buffer(0) %>%
   st_make_valid() %>%
   st_transform(4326)
+  # st_cast("MULTIPOLYGON")
 
 saveRDS(reservations_fixed,
         "data/reservation_shapes/reservations.rds",
@@ -159,7 +167,7 @@ build_mrds_res_layer <- function(res_shapes, master) {
     filter(!is.na(Tribes_List) & Tribes_List != "") %>%
     separate_rows(Tribes_List, sep = ";") %>%
     mutate(Tribes_List = str_trim(Tribes_List))
-  
+
   mineral_by_tribe <- master_long %>%
     filter(!is.na(CODE_LIST) & CODE_LIST != "") %>%
     separate_rows(CODE_LIST, sep = "\\s+") %>%
@@ -170,7 +178,7 @@ build_mrds_res_layer <- function(res_shapes, master) {
     group_by(Tribes_List) %>%
     summarise(Minerals_List = paste(sort(unique(Commodity)), collapse = ", "),
               .groups = "drop")
-  
+
   tribe_summary <- master_long %>%
     group_by(Tribes_List) %>%
     summarise(
@@ -193,7 +201,7 @@ build_mrds_res_layer <- function(res_shapes, master) {
         "</div>"
       )
     )
-  
+
   res_shapes %>%
     left_join(tribe_summary, by = c("NAME" = "Tribes_List"))
 }
@@ -212,7 +220,7 @@ build_usmin_res_layer <- function(res_shapes, master) {
     separate_rows(Tribes_List, sep = ";") %>%
     mutate(Tribes_List = str_trim(Tribes_List)) %>%
     distinct(Name, Tribes_List, .keep_all = TRUE)
-  
+
   mineral_by_tribe <- master_long %>%
     filter(!is.na(`Commodity (From popup info)`) &
              `Commodity (From popup info)` != "") %>%
@@ -224,7 +232,7 @@ build_usmin_res_layer <- function(res_shapes, master) {
       `Commodity (From popup info)`
     )), collapse = ", "),
     .groups = "drop")
-  
+
   tribe_summary <- master_long %>%
     group_by(Tribes_List) %>%
     summarise(
@@ -247,7 +255,7 @@ build_usmin_res_layer <- function(res_shapes, master) {
         "</div>"
       )
     )
-  
+
   res_shapes %>%
     left_join(tribe_summary, by = c("NAME" = "Tribes_List"))
 }

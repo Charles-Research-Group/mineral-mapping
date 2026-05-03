@@ -36,7 +36,7 @@ mrds_map <- function(buffer_lands,
       lng = within_35_mi$lng,
       lat = within_35_mi$lat,
       popup = within_35_mi$SITE_NAME,
-      radius = 2,
+      radius = 3,
       fillColor = 'firebrick',
       fillOpacity = 1,
       stroke = TRUE,
@@ -48,7 +48,7 @@ mrds_map <- function(buffer_lands,
       lng = more_than_35_mi$lng,
       lat = more_than_35_mi$lat,
       popup = more_than_35_mi$SITE_NAME,
-      radius = 2,
+      radius = 3,
       fillColor = 'royalblue',
       fillOpacity = 1,
       stroke = TRUE,
@@ -60,7 +60,7 @@ mrds_map <- function(buffer_lands,
       lng = on_tribal_lands$lng,
       lat = on_tribal_lands$lat,
       popup = on_tribal_lands$SITE_NAME,
-      radius = 2,
+      radius = 3,
       fillColor = 'yellowgreen',
       fillOpacity = 1,
       stroke = TRUE,
@@ -117,7 +117,7 @@ usmin_map <- function(buffer_lands,
       lng = more_than_35_mi$lng,
       lat = more_than_35_mi$lat,
       popup = more_than_35_mi$PopupInfo,
-      radius = 2,
+      radius = 3,
       fillColor = 'royalblue',
       fillOpacity = 1,
       stroke = TRUE,
@@ -129,7 +129,7 @@ usmin_map <- function(buffer_lands,
       lng = within_35_mi$lng,
       lat = within_35_mi$lat,
       popup = within_35_mi$PopupInfo,
-      radius = 2,
+      radius = 3,
       fillColor = 'firebrick',
       fillOpacity = 1,
       stroke = TRUE,
@@ -141,7 +141,7 @@ usmin_map <- function(buffer_lands,
       lng = on_tribal_lands$lng,
       lat = on_tribal_lands$lat,
       popup = on_tribal_lands$PopupInfo,
-      radius = 2,
+      radius = 3,
       fillColor = 'yellowgreen',
       fillOpacity = 1,
       stroke = TRUE,
@@ -166,5 +166,112 @@ usmin_map <- function(buffer_lands,
         'Deposit within 35 miles of tribal land',
         'Deposit more than 35 miles from tribal land'),
       options = layersControlOptions(collapsed = FALSE)
+    )
+}
+
+build_mrds_mineral_table <- function(mineral_summary) {
+  mineral_summary %>%
+    rename(
+      "Commodity"       = Commodity,
+      "Total Deposits"  = Total_Deposits,
+      "On Tribal Land"  = On_Tribal_Land,
+      "Within 35mi"     = Within_35mi_Buffer,
+      "% On Land"       = Pct_On_Tribal_Land,
+      "% Within 35mi"   = Pct_Within_35mi,
+      "% Any Proximity" = Pct_Any_Proximity
+    ) %>%
+    datatable(
+      rownames = FALSE,
+      options  = list(
+        dom        = "ft",
+        pageLength = -1,
+        scrollX    = TRUE,
+        ordering   = TRUE
+      )
+    ) %>%
+    formatStyle(
+      "% Any Proximity",
+      background         = styleColorBar(c(0, 100), "#a8d08d"),
+      backgroundSize     = "100% 90%",
+      backgroundRepeat   = "no-repeat",
+      backgroundPosition = "center"
+    )
+}
+
+build_mrds_stakeholder_table <- function(stakeholder_map) {
+  stakeholder_map %>%
+    rename(
+      "Tribe"                 = Tribe_Name,
+      "Intersecting Deposits" = Total_Intersecting_Deposits
+    ) %>%
+    datatable(
+      rownames = FALSE,
+      options  = list(
+        dom        = "ft",
+        pageLength = -1,
+        scrollX    = TRUE,
+        ordering   = TRUE
+      )
+    ) %>%
+    formatStyle(
+      "Intersecting Deposits",
+      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), "#7cb5d4"),
+      backgroundSize     = "100% 90%",
+      backgroundRepeat   = "no-repeat",
+      backgroundPosition = "center"
+    )
+}
+
+build_usmin_mineral_table <- function(mineral_summary) {
+  mineral_summary %>%
+    mutate(Commodity = str_to_title(Commodity)) %>%   # capitalize since USMIN is lowercase
+    rename(
+      "Commodity"       = Commodity,
+      "Total Deposits"  = Total_Deposits,
+      "On Tribal Land"  = On_Tribal_Land,
+      "Within 35mi"     = Within_35mi_Buffer,
+      "% On Land"       = Pct_On_Tribal_Land,
+      "% Within 35mi"   = Pct_Within_35mi,
+      "% Any Proximity" = Pct_Any_Proximity
+    ) %>%
+    datatable(
+      rownames = FALSE,
+      options  = list(
+        dom        = "ft",
+        pageLength = -1,
+        scrollX    = TRUE,
+        ordering   = TRUE
+      )
+    ) %>%
+    formatStyle(
+      "% Any Proximity",
+      background         = styleColorBar(c(0, 100), "#a8d08d"),
+      backgroundSize     = "100% 90%",
+      backgroundRepeat   = "no-repeat",
+      backgroundPosition = "center"
+    )
+}
+
+build_usmin_stakeholder_table <- function(stakeholder_map) {
+  stakeholder_map %>%
+    rename(
+      "Tribe"                 = Tribe_Name,
+      "Intersecting Deposits" = Total_Intersecting_Deposits
+    ) %>%
+    datatable(
+      rownames = FALSE,
+      options  = list(
+        dom        = "ft",
+        pageLength = -1,
+        scrollX    = TRUE,
+        ordering   = TRUE
+      )
+    ) %>%
+    formatStyle(
+      "Intersecting Deposits",
+      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), "#7cb5d4"),
+      backgroundSize     = "100% 90%",
+      backgroundRepeat   = "no-repeat",
+      backgroundPosition = "center"
     )
 }
