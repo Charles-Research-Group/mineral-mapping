@@ -175,9 +175,14 @@ build_mrds_res_layer <- function(res_shapes, master) {
     left_join(code_dict_tbl, by = c("CODE_LIST" = "CODE")) %>%
     filter(!is.na(Commodity), Commodity != "NULL") %>%
     mutate(Commodity = as.character(Commodity)) %>%
+    group_by(Tribes_List, Commodity) %>%
+    summarise(count = n(), .groups = "drop") %>%
+    arrange(Tribes_List, desc(count)) %>%
     group_by(Tribes_List) %>%
-    summarise(Minerals_List = paste(sort(unique(Commodity)), collapse = ", "),
-              .groups = "drop")
+    summarise(
+      Minerals_List = paste0(Commodity, " (", count, ")", collapse = ", "),
+      .groups = "drop"
+    )
 
   tribe_summary <- master_long %>%
     group_by(Tribes_List) %>%
@@ -225,13 +230,19 @@ build_usmin_res_layer <- function(res_shapes, master) {
     filter(!is.na(`Commodity (From popup info)`) &
              `Commodity (From popup info)` != "") %>%
     separate_rows(`Commodity (From popup info)`, sep = ";") %>%
-    mutate(`Commodity (From popup info)` = str_to_title(str_trim(`Commodity (From popup info)`))) %>%
+    mutate(`Commodity (From popup info)` =
+             str_to_title(str_trim(`Commodity (From popup info)`))) %>%
     filter(`Commodity (From popup info)` != "") %>%
+    group_by(Tribes_List, `Commodity (From popup info)`) %>%
+    summarise(count = n(), .groups = "drop") %>%
+    arrange(Tribes_List, desc(count)) %>%
     group_by(Tribes_List) %>%
-    summarise(Minerals_List = paste(sort(unique(
-      `Commodity (From popup info)`
-    )), collapse = ", "),
-    .groups = "drop")
+    summarise(
+      Minerals_List = paste0(
+        `Commodity (From popup info)`, " (", count, ")"
+        , collapse = ", "),
+      .groups = "drop"
+    )
 
   tribe_summary <- master_long %>%
     group_by(Tribes_List) %>%

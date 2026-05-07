@@ -4,3 +4,4 @@ mineral-mapping.Rproj
 .RData
 .Rhistory
 rsconnect/
+data/reservation_shapes/buffer_lands.geojson
