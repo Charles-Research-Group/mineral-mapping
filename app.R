@@ -39,30 +39,30 @@ usmin_res_shapes <- readRDS('data/reservation_shapes/usmin_reservations.rds')
 buffer_lands <- readRDS('data/reservation_shapes/buffer_lands.rds')
 tribe_list <- c('All Tribes', sort(mrds_stakeholder_map$Tribe_Name))
 
-print(
-  obj_sizes(
-    mrds_on_tribal_lands,
-    mrds_within_35_mi,
-    mrds_more_than_35_mi,
-    usmin_on_tribal_lands,
-    usmin_within_35_mi,
-    usmin_more_than_35_mi,
-    res_shapes,
-    buffer_lands
-  )
-)
-
 # UI layout ----
-ui <- fluidPage(sidebarLayout(
-  sidebarPanel(width = 3, selectInput('tribe', 'Tribe', choices = tribe_list)),
+ui <- fluidPage(
   tabsetPanel(
     id = 'page',
     tabPanel(
+      'Home',
+      div(
+        style = "padding: 10px;",
+        h2("MRDS and USMIN Tribal Land Analysis"),
+        p(
+          "This application explores the proximity of mineral deposits ",
+          "to tribal lands using data from the MRDS and USMIN databases."
+        )
+      )
+    ),
+    tabPanel(
       'MRDS',
+      sidebarLayout(
+        sidebarPanel(width = 3, selectInput('tribe', 'Tribe', choices = tribe_list)),
+      mainPanel(
       width = 9,
       div(
-        style = "padding: 20px;",
-      leafletOutput('mrds_map', height = '80vh'),
+        style = "padding: 10px;",
+        leafletOutput('mrds_map', height = '80vh'),
         br(),
         h4("Mineral Proximity Summary"),
         div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_mineral_tbl")),
@@ -70,12 +70,16 @@ ui <- fluidPage(sidebarLayout(
         h4("Tribal Stakeholder Mapping"),
         div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_stakeholder_tbl"))
       )
+    ))
     ),
     tabPanel(
       'USMIN',
+      sidebarLayout(
+        sidebarPanel(width = 3, selectInput('tribe', 'Tribe', choices = tribe_list)),
+      mainPanel(
       width = 9,
       div(
-        style = "padding: 20px;",
+        style = "padding: 10px;",
         leafletOutput('usmin_map', height = '80vh'),
         br(),
         h4("Mineral Proximity Summary"),
@@ -84,7 +88,7 @@ ui <- fluidPage(sidebarLayout(
         h4("Tribal Stakeholder Mapping"),
         div(style = "height:350px; overflow-y:auto;", DTOutput("usmin_stakeholder_tbl"))
       )
-    )
+    ))
   )
 ))
 
@@ -145,8 +149,6 @@ server <- function(input, output) {
         filter(NAME == input$tribe)
     }
   })
-  
-  # mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
   
   output$mrds_map <- renderLeaflet({
     mrds_map(

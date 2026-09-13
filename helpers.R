@@ -29,7 +29,6 @@ mrds_map <- function(buffer_lands,
       fillColor = 'yellowgreen',
       fillOpacity = 0.5,
       weight = 1,
-      # popup = buffer_lands$NAME,
       group = 'Tribes'
     ) %>%
     addCircleMarkers(
@@ -110,7 +109,6 @@ usmin_map <- function(buffer_lands,
       fillColor = 'yellowgreen',
       fillOpacity = 0.5,
       weight = 1,
-      # popup = buffer_lands$NAME,
       group = 'Tribes'
     ) %>%
     addCircleMarkers(
@@ -224,7 +222,7 @@ build_mrds_stakeholder_table <- function(stakeholder_map) {
 
 build_usmin_mineral_table <- function(mineral_summary) {
   mineral_summary %>%
-    mutate(Commodity = str_to_title(Commodity)) %>%   # capitalize since USMIN is lowercase
+    mutate(Commodity = str_to_title(Commodity)) %>%
     rename(
       "Commodity"       = Commodity,
       "Total Deposits"  = Total_Deposits,

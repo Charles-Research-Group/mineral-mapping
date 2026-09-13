@@ -206,9 +206,20 @@ build_mrds_res_layer <- function(res_shapes, master) {
         "</div>"
       )
     )
-
-  res_shapes %>%
-    left_join(tribe_summary, by = c("NAME" = "Tribes_List"))
+  
+    res_shapes %>%
+      left_join(tribe_summary, by = c("NAME" = "Tribes_List")) %>%
+      mutate(
+        popup = ifelse(
+          is.na(popup),
+          paste0(
+            "<div style='font-size:13px'>",
+            "<b>Tribe:</b> ", NAME,
+            "</div>"
+          ),
+          popup
+        )
+      )
 }
 
 mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
