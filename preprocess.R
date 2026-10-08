@@ -16,7 +16,7 @@ prep_polygons <- function(x, simplify = FALSE, tol = 1500) {
   x |> st_transform(4326)
 }
 
-buffer_lands_raw <- st_read("data/reservation_shapes/buffer_lands.geojson",
+buffer_lands_raw <- st_read(;data/reservation_shapes/buffer_lands.geojson;,
                             quiet = TRUE)
 
 buffer_lands_fixed <- buffer_lands_raw %>%
@@ -28,10 +28,10 @@ buffer_lands_fixed <- buffer_lands_raw %>%
   st_transform(4326)
 
 saveRDS(buffer_lands_fixed,
-        "data/reservation_shapes/buffer_lands.rds",
+        ;data/reservation_shapes/buffer_lands.rds;,
         compress = FALSE)
 
-reservations_raw <- st_read("data/reservation_shapes/TribalLands_fo_ExportFeature.shp",
+reservations_raw <- st_read(;data/reservation_shapes/TribalLands_fo_ExportFeature.shp;,
                             quiet = TRUE)
 
 reservations_fixed <- reservations_raw %>%
@@ -42,10 +42,10 @@ reservations_fixed <- reservations_raw %>%
   st_buffer(0) %>%
   st_make_valid() %>%
   st_transform(4326)
-  # st_cast("MULTIPOLYGON")
+  # st_cast(;MULTIPOLYGON;)
 
 saveRDS(reservations_fixed,
-        "data/reservation_shapes/reservations.rds",
+        ;data/reservation_shapes/reservations.rds;,
         compress = FALSE)
 
 
@@ -164,24 +164,24 @@ usmin_master <- read_csv('data/USMIN_Analysis/USMIN_Master_Deposits.csv',
 
 build_mrds_res_layer <- function(res_shapes, master) {
   master_long <- master %>%
-    filter(!is.na(Tribes_List) & Tribes_List != "") %>%
-    separate_rows(Tribes_List, sep = ";") %>%
+    filter(!is.na(Tribes_List) & Tribes_List != ;;) %>%
+    separate_rows(Tribes_List, sep = ;;;) %>%
     mutate(Tribes_List = str_trim(Tribes_List))
 
   mineral_by_tribe <- master_long %>%
-    filter(!is.na(CODE_LIST) & CODE_LIST != "") %>%
-    separate_rows(CODE_LIST, sep = "\\s+") %>%
+    filter(!is.na(CODE_LIST) & CODE_LIST != ;;) %>%
+    separate_rows(CODE_LIST, sep = ;\\s+;) %>%
     mutate(CODE_LIST = str_trim(CODE_LIST)) %>%
-    left_join(code_dict_tbl, by = c("CODE_LIST" = "CODE")) %>%
-    filter(!is.na(Commodity), Commodity != "NULL") %>%
+    left_join(code_dict_tbl, by = c(;CODE_LIST; = ;CODE;)) %>%
+    filter(!is.na(Commodity), Commodity != ;NULL;) %>%
     mutate(Commodity = as.character(Commodity)) %>%
     group_by(Tribes_List, Commodity) %>%
-    summarise(count = n(), .groups = "drop") %>%
+    summarise(count = n(), .groups = ;drop;) %>%
     arrange(Tribes_List, desc(count)) %>%
     group_by(Tribes_List) %>%
     summarise(
-      Minerals_List = paste0(Commodity, " (", count, ")", collapse = ", "),
-      .groups = "drop"
+      Minerals_List = paste0(Commodity, ; (;, count, ;);, collapse = ;, ;),
+      .groups = ;drop;
     )
 
   tribe_summary <- master_long %>%
@@ -190,32 +190,32 @@ build_mrds_res_layer <- function(res_shapes, master) {
       Total_Deposits = n_distinct(SITE_NAME),
       On_Tribal_Land = sum(On_Tribal_Land, na.rm = TRUE),
       Within_35mi = sum(Within_35mi_Buffer, na.rm = TRUE),
-      .groups = "drop"
+      .groups = ;drop;
     ) %>%
-    left_join(mineral_by_tribe, by = "Tribes_List") %>%
+    left_join(mineral_by_tribe, by = ;Tribes_List;) %>%
     mutate(
       popup = glue(
-        "<div style='font-size:13px'>",
-        "<b>Tribe:</b> {Tribes_List}",
-        "<hr>",
-        "<b>Total Deposits:</b> {Total_Deposits}<br>",
-        "<b>On Tribal Land:</b> {On_Tribal_Land}<br>",
-        "<b>Within 35 mi:</b> {Within_35mi}<br>",
-        "<hr>",
-        "<b>Minerals:</b><br>{Minerals_List}<br>",
-        "</div>"
+        ;<div style='font-size:13px'>;,
+        ;<b>Tribe:</b> {Tribes_List};,
+        ;<hr>;,
+        ;<b>Total Deposits:</b> {Total_Deposits}<br>;,
+        ;<b>On Tribal Land:</b> {On_Tribal_Land}<br>;,
+        ;<b>Within 35 mi:</b> {Within_35mi}<br>;,
+        ;<hr>;,
+        ;<b>Minerals:</b><br>{Minerals_List}<br>;,
+        ;</div>;
       )
     )
   
     res_shapes %>%
-      left_join(tribe_summary, by = c("NAME" = "Tribes_List")) %>%
+      left_join(tribe_summary, by = c(;NAME; = ;Tribes_List;)) %>%
       mutate(
         popup = ifelse(
           is.na(popup),
           paste0(
-            "<div style='font-size:13px'>",
-            "<b>Tribe:</b> ", NAME,
-            "</div>"
+            ;<div style='font-size:13px'>;,
+            ;<b>Tribe:</b> ;, NAME,
+            ;</div>;
           ),
           popup
         )
@@ -225,34 +225,34 @@ build_mrds_res_layer <- function(res_shapes, master) {
 mrds_res_layer <- build_mrds_res_layer(res_shapes, mrds_master)
 
 saveRDS(mrds_res_layer,
-        "data/reservation_shapes/mrds_reservations.rds",
+        ;data/reservation_shapes/mrds_reservations.rds;,
         compress = FALSE)
 
 # ------------------------------------------------------------------------------
 
 build_usmin_res_layer <- function(res_shapes, master) {
   master_long <- master %>%
-    filter(!is.na(Tribes_List) & Tribes_List != "") %>%
-    separate_rows(Tribes_List, sep = ";") %>%
+    filter(!is.na(Tribes_List) & Tribes_List != ;;) %>%
+    separate_rows(Tribes_List, sep = ;;;) %>%
     mutate(Tribes_List = str_trim(Tribes_List)) %>%
     distinct(Name, Tribes_List, .keep_all = TRUE)
 
   mineral_by_tribe <- master_long %>%
     filter(!is.na(`Commodity (From popup info)`) &
-             `Commodity (From popup info)` != "") %>%
-    separate_rows(`Commodity (From popup info)`, sep = ";") %>%
+             `Commodity (From popup info)` != ;;) %>%
+    separate_rows(`Commodity (From popup info)`, sep = ;;;) %>%
     mutate(`Commodity (From popup info)` =
              str_to_title(str_trim(`Commodity (From popup info)`))) %>%
-    filter(`Commodity (From popup info)` != "") %>%
+    filter(`Commodity (From popup info)` != ;;) %>%
     group_by(Tribes_List, `Commodity (From popup info)`) %>%
-    summarise(count = n(), .groups = "drop") %>%
+    summarise(count = n(), .groups = ;drop;) %>%
     arrange(Tribes_List, desc(count)) %>%
     group_by(Tribes_List) %>%
     summarise(
       Minerals_List = paste0(
-        `Commodity (From popup info)`, " (", count, ")"
-        , collapse = ", "),
-      .groups = "drop"
+        `Commodity (From popup info)`, ; (;, count, ;);
+        , collapse = ;, ;),
+      .groups = ;drop;
     )
 
   tribe_summary <- master_long %>%
@@ -261,29 +261,29 @@ build_usmin_res_layer <- function(res_shapes, master) {
       Total_Deposits = n_distinct(Name),
       On_Tribal_Land = sum(On_Tribal_Land, na.rm = TRUE),
       Within_35mi = sum(Within_35mi_Buffer, na.rm = TRUE),
-      .groups = "drop"
+      .groups = ;drop;
     ) %>%
-    left_join(mineral_by_tribe, by = "Tribes_List") %>%
+    left_join(mineral_by_tribe, by = ;Tribes_List;) %>%
     mutate(
       popup = glue(
-        "<div style='font-size:13px'>",
-        "<b>Tribe:</b> {Tribes_List}",
-        "<hr>",
-        "<b>Total Deposits:</b> {Total_Deposits}<br>",
-        "<b>On Tribal Land:</b> {On_Tribal_Land}<br>",
-        "<b>Within 35 mi:</b> {Within_35mi}<br>",
-        "<hr>",
-        "<b>Minerals:</b><br>{Minerals_List}<br>",
-        "</div>"
+        ;<div style='font-size:13px'>;,
+        ;<b>Tribe:</b> {Tribes_List};,
+        ;<hr>;,
+        ;<b>Total Deposits:</b> {Total_Deposits}<br>;,
+        ;<b>On Tribal Land:</b> {On_Tribal_Land}<br>;,
+        ;<b>Within 35 mi:</b> {Within_35mi}<br>;,
+        ;<hr>;,
+        ;<b>Minerals:</b><br>{Minerals_List}<br>;,
+        ;</div>;
       )
     )
 
   res_shapes %>%
-    left_join(tribe_summary, by = c("NAME" = "Tribes_List"))
+    left_join(tribe_summary, by = c(;NAME; = ;Tribes_List;))
 }
 
 usmin_res_layer <- build_usmin_res_layer(res_shapes, usmin_master)
 
 saveRDS(usmin_res_layer,
-        "data/reservation_shapes/usmin_reservations.rds",
+        ;data/reservation_shapes/usmin_reservations.rds;,
         compress = FALSE)

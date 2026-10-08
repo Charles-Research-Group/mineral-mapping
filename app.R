@@ -46,11 +46,11 @@ ui <- fluidPage(
     tabPanel(
       'Home',
       div(
-        style = "padding: 10px;",
-        h2("MRDS and USMIN Tribal Land Analysis"),
+        style = 'padding: 10px;',
+        h2('MRDS and USMIN Tribal Land Analysis'),
         p(
-          "This application explores the proximity of mineral deposits ",
-          "to tribal lands using data from the MRDS and USMIN databases."
+          'This application explores the proximity of mineral deposits ',
+          'to tribal lands using data from the MRDS and USMIN databases.'
         )
       )
     ),
@@ -61,14 +61,15 @@ ui <- fluidPage(
       mainPanel(
       width = 9,
       div(
-        style = "padding: 10px;",
+        style = 'padding: 10px;',
+        p('Description goes here'),
         leafletOutput('mrds_map', height = '80vh'),
         br(),
-        h4("Mineral Proximity Summary"),
-        div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_mineral_tbl")),
+        h4('Mineral Proximity Summary'),
+        div(style = 'height:350px; overflow-y:auto;', DTOutput('mrds_mineral_tbl')),
         br(),
-        h4("Tribal Stakeholder Mapping"),
-        div(style = "height:350px; overflow-y:auto;", DTOutput("mrds_stakeholder_tbl"))
+        h4('Tribal Stakeholder Mapping'),
+        div(style = 'height:350px; overflow-y:auto;', DTOutput('mrds_stakeholder_tbl'))
       )
     ))
     ),
@@ -79,14 +80,15 @@ ui <- fluidPage(
       mainPanel(
       width = 9,
       div(
-        style = "padding: 10px;",
+        style = 'padding: 10px;',
+        p('Description goes here'),
         leafletOutput('usmin_map', height = '80vh'),
         br(),
-        h4("Mineral Proximity Summary"),
-        div(style = "height:350px; overflow-y:auto;", DTOutput("usmin_mineral_tbl")),
+        h4('Mineral Proximity Summary'),
+        div(style = 'height:350px; overflow-y:auto;', DTOutput('usmin_mineral_tbl')),
         br(),
-        h4("Tribal Stakeholder Mapping"),
-        div(style = "height:350px; overflow-y:auto;", DTOutput("usmin_stakeholder_tbl"))
+        h4('Tribal Stakeholder Mapping'),
+        div(style = 'height:350px; overflow-y:auto;', DTOutput('usmin_stakeholder_tbl'))
       )
     ))
   )

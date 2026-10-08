@@ -170,53 +170,53 @@ usmin_map <- function(buffer_lands,
 build_mrds_mineral_table <- function(mineral_summary) {
   mineral_summary %>%
     rename(
-      "Commodity"       = Commodity,
-      "Total Deposits"  = Total_Deposits,
-      "On Tribal Land"  = On_Tribal_Land,
-      "Within 35mi"     = Within_35mi_Buffer,
-      "% On Land"       = Pct_On_Tribal_Land,
-      "% Within 35mi"   = Pct_Within_35mi,
-      "% Any Proximity" = Pct_Any_Proximity
+      'Commodity'       = Commodity,
+      'Total Deposits'  = Total_Deposits,
+      'On Tribal Land'  = On_Tribal_Land,
+      'Within 35mi'     = Within_35mi_Buffer,
+      '% On Land'       = Pct_On_Tribal_Land,
+      '% Within 35mi'   = Pct_Within_35mi,
+      '% Any Proximity' = Pct_Any_Proximity
     ) %>%
     datatable(
       rownames = FALSE,
       options  = list(
-        dom        = "ft",
+        dom        = 'ft',
         pageLength = -1,
         scrollX    = TRUE,
         ordering   = TRUE
       )
     ) %>%
     formatStyle(
-      "% Any Proximity",
-      background         = styleColorBar(c(0, 100), "#a8d08d"),
-      backgroundSize     = "100% 90%",
-      backgroundRepeat   = "no-repeat",
-      backgroundPosition = "center"
+      '% Any Proximity',
+      background         = styleColorBar(c(0, 100), '#a8d08d'),
+      backgroundSize     = '100% 90%',
+      backgroundRepeat   = 'no-repeat',
+      backgroundPosition = 'center'
     )
 }
 
 build_mrds_stakeholder_table <- function(stakeholder_map) {
   stakeholder_map %>%
     rename(
-      "Tribe"                 = Tribe_Name,
-      "Intersecting Deposits" = Total_Intersecting_Deposits
+      'Tribe'                 = Tribe_Name,
+      'Intersecting Deposits' = Total_Intersecting_Deposits
     ) %>%
     datatable(
       rownames = FALSE,
       options  = list(
-        dom        = "ft",
+        dom        = 'ft',
         pageLength = -1,
         scrollX    = TRUE,
         ordering   = TRUE
       )
     ) %>%
     formatStyle(
-      "Intersecting Deposits",
-      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), "#7cb5d4"),
-      backgroundSize     = "100% 90%",
-      backgroundRepeat   = "no-repeat",
-      backgroundPosition = "center"
+      'Intersecting Deposits',
+      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), '#7cb5d4'),
+      backgroundSize     = '100% 90%',
+      backgroundRepeat   = 'no-repeat',
+      backgroundPosition = 'center'
     )
 }
 
@@ -224,52 +224,52 @@ build_usmin_mineral_table <- function(mineral_summary) {
   mineral_summary %>%
     mutate(Commodity = str_to_title(Commodity)) %>%
     rename(
-      "Commodity"       = Commodity,
-      "Total Deposits"  = Total_Deposits,
-      "On Tribal Land"  = On_Tribal_Land,
-      "Within 35mi"     = Within_35mi_Buffer,
-      "% On Land"       = Pct_On_Tribal_Land,
-      "% Within 35mi"   = Pct_Within_35mi,
-      "% Any Proximity" = Pct_Any_Proximity
+      'Commodity'       = Commodity,
+      'Total Deposits'  = Total_Deposits,
+      'On Tribal Land'  = On_Tribal_Land,
+      'Within 35mi'     = Within_35mi_Buffer,
+      '% On Land'       = Pct_On_Tribal_Land,
+      '% Within 35mi'   = Pct_Within_35mi,
+      '% Any Proximity' = Pct_Any_Proximity
     ) %>%
     datatable(
       rownames = FALSE,
       options  = list(
-        dom        = "ft",
+        dom        = 'ft',
         pageLength = -1,
         scrollX    = TRUE,
         ordering   = TRUE
       )
     ) %>%
     formatStyle(
-      "% Any Proximity",
-      background         = styleColorBar(c(0, 100), "#a8d08d"),
-      backgroundSize     = "100% 90%",
-      backgroundRepeat   = "no-repeat",
-      backgroundPosition = "center"
+      '% Any Proximity',
+      background         = styleColorBar(c(0, 100), '#a8d08d'),
+      backgroundSize     = '100% 90%',
+      backgroundRepeat   = 'no-repeat',
+      backgroundPosition = 'center'
     )
 }
 
 build_usmin_stakeholder_table <- function(stakeholder_map) {
   stakeholder_map %>%
     rename(
-      "Tribe"                 = Tribe_Name,
-      "Intersecting Deposits" = Total_Intersecting_Deposits
+      'Tribe'                 = Tribe_Name,
+      'Intersecting Deposits' = Total_Intersecting_Deposits
     ) %>%
     datatable(
       rownames = FALSE,
       options  = list(
-        dom        = "ft",
+        dom        = 'ft',
         pageLength = -1,
         scrollX    = TRUE,
         ordering   = TRUE
       )
     ) %>%
     formatStyle(
-      "Intersecting Deposits",
-      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), "#7cb5d4"),
-      backgroundSize     = "100% 90%",
-      backgroundRepeat   = "no-repeat",
-      backgroundPosition = "center"
+      'Intersecting Deposits',
+      background         = styleColorBar(range(stakeholder_map$Total_Intersecting_Deposits), '#7cb5d4'),
+      backgroundSize     = '100% 90%',
+      backgroundRepeat   = 'no-repeat',
+      backgroundPosition = 'center'
     )
 }
